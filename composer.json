@@ -1,0 +1,30 @@
+{
+    "name": "olivertwistor/financial-assets-manager",
+    "description": "Helps you keep track of your financial assets over time.",
+    "version": "0.1.0",
+    "type": "project",
+    "keywords": ["finance"],
+    "homepage": "https://github.com/olivertwistor/financial-assets-manager",
+    "readme": "README.md",
+    "time": "2019-07-13",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Johan Nilsson",
+            "email": "oliver_twistor@hotmail.com",
+            "homepage": "http://www.olivertwistor.nu",
+            "role": "developer"
+        }
+    ],
+    "support": {
+        "email": "oliver_twistor@hotmail.com",
+        "issues": "https://github.com/olivertwistor/financial-assets-manager/issues",
+        "source": "https://github.com/olivertwistor/financial-assets-manager"
+    },
+    "require": {
+        "php": "^7.2"
+    },
+    "config": {
+        "vendor-dir": "application/vendor/"
+    }
+}
