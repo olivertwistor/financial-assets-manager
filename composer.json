@@ -6,7 +6,7 @@
     "keywords": ["finance"],
     "homepage": "https://github.com/olivertwistor/financial-assets-manager",
     "readme": "README.md",
-    "time": "2019-07-13",
+    "time": "2021-01-04",
     "license": "MIT",
     "authors": [
         {
@@ -23,8 +23,5 @@
     },
     "require": {
         "php": "^7.2"
-    },
-    "config": {
-        "vendor-dir": "application/vendor/"
     }
 }
