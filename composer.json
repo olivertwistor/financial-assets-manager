@@ -22,6 +22,21 @@
         "source": "https://github.com/olivertwistor/financial-assets-manager"
     },
     "require": {
-        "php": "^7.2"
+        "php": ">=7.1",
+        "ext-sqlite": "*",
+        "ext-sqlite3": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Olivertwistor\\AssetManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Olivertwistor\\AssetManager\\": "tests/"
+        }
     }
 }
