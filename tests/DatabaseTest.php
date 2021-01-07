@@ -120,14 +120,12 @@ final class DatabaseTest extends TestCase
         $random_version = rand(1, 1000000);
         $todays_date = date('Y-m-d');
 
-        $insert_db_version_sql = <<<SQL
-INSERT INTO db_version (version, date)
-VALUES ($random_version, $todays_date);
-SQL;
-
         try
         {
-            self::$database->executeStatement($insert_db_version_sql);
+            self::$database->executeStatement("
+                INSERT INTO db_version (version, date) 
+                VALUES ($random_version, $todays_date);
+            ");
         }
         catch (DatabaseException $e)
         {
