@@ -23,10 +23,11 @@ final class DatabaseTest extends TestCase
 
     public static function setUpBeforeClass() : void
     {
-        self::$database = new Database('test.sqlite3');
+        self::$database = new Database('tests/test.sqlite3');
     }
 
-    public function getDbVersionGivesNumberGreaterThanOrEqualToZero()
+    /** @test */
+    public function getDbVersionGivesNumberGreaterThanOrEqualToZero() : void
     {
         try
         {
@@ -40,7 +41,11 @@ final class DatabaseTest extends TestCase
         }
     }
 
-    public function setDbVersionWithDefaultDateDoesNotThrowException()
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function setDbVersionWithDefaultDateDoesNotThrowException() : void
     {
         $random_version = rand(1, 1000000);
 
@@ -54,7 +59,11 @@ final class DatabaseTest extends TestCase
         }
     }
 
-    public function setDbVersionWithDateDoesNotThrowException()
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function setDbVersionWithDateDoesNotThrowException() : void
     {
         $random_version = rand(1, 1000000);
 
@@ -68,7 +77,11 @@ final class DatabaseTest extends TestCase
         }
     }
 
-    public function beginAndCommitTransactionDoesNotThrowException()
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function beginAndCommitTransactionDoesNotThrowException() : void
     {
         try
         {
@@ -81,7 +94,11 @@ final class DatabaseTest extends TestCase
         }
     }
 
-    public function beginAndRollbackTransactionDoesNotThrowException()
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function beginAndRollbackTransactionDoesNotThrowException() : void
     {
         try
         {
@@ -94,10 +111,14 @@ final class DatabaseTest extends TestCase
         }
     }
 
-    public function executeStatementWithoutParamsDoesNotThrowException()
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function executeStatementWithoutParamsDoesNotThrowException() : void
     {
         $random_version = rand(1, 1000000);
-        $todays_date = date('YYYY-mm-dd');
+        $todays_date = date('Y-m-d');
 
         try
         {
@@ -112,10 +133,14 @@ final class DatabaseTest extends TestCase
         }
     }
 
-    public function executeStatementWithParamsDoesNotThrowException()
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function executeStatementWithParamsDoesNotThrowException() : void
     {
-        $random_version = rand(1, 10000);
-        $todays_date = date('YYYY-mm-dd');
+        $random_version = rand(1, 1000000);
+        $todays_date = date('Y-m-d');
 
         try
         {

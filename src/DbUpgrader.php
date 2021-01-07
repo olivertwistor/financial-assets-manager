@@ -47,22 +47,22 @@ class DbUpgrader
             {
                 // Create the db_version table holding database version
                 // information.
-                $database->executeStatement('
-                    CREATE TABLE IF NOT EXISTS db_version 
-                    (
-                        version INTEGER NOT NULL, 
-                        date    TEXT    NOT NULL, 
-                        
-                        PRIMARY KEY (version)
-                    );
-                ');
+                $create_db_version_table_sql = <<<SQL
+CREATE TABLE IF NOT EXISTS db_version
+(
+    version INTEGER NOT NULL,
+    date    TEXT    NOT NULL
+);
+SQL;
+                $database->executeStatement($create_db_version_table_sql);
 
                 // Add an index on the date column of the database version
                 // table, since we're sorting on date quite often.
-                $database->executeStatement('
-                    CREATE INDEX IF NOT EXISTS idx_date 
-                    ON db_version(date);
-                ');
+                $create_db_version_index_sql = <<<SQL
+CREATE INDEX IF NOT EXISTS idx_date
+ON db_version(date);
+SQL;
+                $database->executeStatement($create_db_version_index_sql);
 
                 // We're done with upgrading to version 1. Update the database
                 // to reflect that.

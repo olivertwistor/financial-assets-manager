@@ -26,7 +26,8 @@ class Database
 
     public function __construct(string $filename)
     {
-        $this->dataSource = new SQLite3($filename, SQLITE3_OPEN_CREATE);
+        $this->dataSource = new SQLite3(
+            $filename, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
     }
 
     /**
@@ -47,11 +48,12 @@ class Database
         // First, we need to determine whether the db_version table exists at
         // all. If it doesn't, we're dealing with a brand new database, and
         // should return 0.
-        $table_name = $this->querySingle("
-            SELECT name 
-            FROM sqlite_master 
-            WHERE type='table' AND name='db_version'
-        ");
+        $table_name_sql = <<<SQL
+SELECT name 
+FROM sqlite_master 
+WHERE type='table' AND name='db_version';
+SQL;
+        $table_name = $this->querySingle($table_name_sql);
         if ($table_name == null)
         {
             return 0;
@@ -60,12 +62,13 @@ class Database
         // We now know there is a db_version table. By looking at the row with
         // the latest date, we can determine the current version of the
         // database.
-        $current_version = $this->querySingle('
-            SELECT version 
-            FROM db_version 
-            ORDER BY date, version DESC 
-            LIMIT 1'
-        );
+        $current_version_sql = <<<SQL
+SELECT version
+FROM db_version 
+ORDER BY date, version DESC 
+LIMIT 1;
+SQL;
+        $current_version = $this->querySingle($current_version_sql);
         if ($current_version == null)
         {
             return 0;
@@ -87,9 +90,8 @@ class Database
      */
     public function setDbVersion(int $version, string $date = null) : void
     {
-        // Validate arguments. Version must not be lower than 1 and Date must
-        // have a valid format (YYYY-mm-dd). If Date is null, today's date is
-        // used.
+        // Validate arguments. Version must not be lower than 1. If Date is
+        // null, today's date is used.
         if ($version < 1)
         {
             throw new InvalidArgumentException(
@@ -97,19 +99,15 @@ class Database
         }
         if ($date == null)
         {
-            $date = date('YYYY-mm-dd');
-        }
-        elseif (preg_match('%d{4}-%d{2}-%d{2}', $date) != 1)
-        {
-            throw new InvalidArgumentException(
-                'Date must have the format YYYY-mm-dd.');
+            $date = date('Y-m-d');
         }
 
         // Insert the version and the date into the database.
-        $this->executeStatement("
-            INSERT INTO db_version (version, date) 
-            VALUES ($version, $date)
-        ");
+        $insert_db_version_sql = <<<SQL
+INSERT INTO db_version (version, date)
+VALUES ($version, $date);
+SQL;
+        $this->executeStatement($insert_db_version_sql);
     }
 
     /**
@@ -190,7 +188,7 @@ class Database
         // If we have parameters, we'll bind them to the statement.
         foreach ($params as $key => $value)
         {
-            $success = $statement->bindParam($key, $value);
+            $success = $statement->bindValue($key, $value);
             if (!$success)
             {
                 throw new DatabaseException(
