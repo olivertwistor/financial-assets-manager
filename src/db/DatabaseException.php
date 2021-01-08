@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Olivertwistor\AssetManager;
+namespace Olivertwistor\AssetManager\db;
 
 use Exception;
 

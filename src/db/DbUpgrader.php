@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Olivertwistor\AssetManager;
+namespace Olivertwistor\AssetManager\db;
 
 /**
  * The DbUgrader handles upgrading the database schema to the current version.
@@ -34,7 +34,7 @@ class DbUpgrader
      *
      * @since 0.1.0
      */
-    public function upgrade(Database $database) : bool
+    public static function upgrade(Database $database) : bool
     {
         $old_version = $database->getDbVersion();
 
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS db_version
     date    TEXT    NOT NULL
 );
 SQL;
-                $database->executeStatement($create_db_version_table_sql);
+                $database->execute($create_db_version_table_sql);
 
                 // Add an index on the date column of the database version
                 // table, since we're sorting on date quite often.
@@ -62,7 +62,17 @@ SQL;
 CREATE INDEX IF NOT EXISTS idx_date
 ON db_version(date);
 SQL;
-                $database->executeStatement($create_db_version_index_sql);
+                $database->execute($create_db_version_index_sql);
+
+                // Create the table for asset types.
+                $create_asset_type_sql = <<<SQL
+CREATE TABLE IF NOT EXISTS asset_type
+(
+    id   INTEGER PRIMARY KEY,
+    name TEXT
+);
+SQL;
+                $database->execute($create_asset_type_sql);
 
                 // We're done with upgrading to version 1. Update the database
                 // to reflect that.

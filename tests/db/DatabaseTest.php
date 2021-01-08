@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Olivertwistor\AssetManager;
+namespace Olivertwistor\AssetManager\db;
 
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ final class DatabaseTest extends TestCase
 
     public static function setUpBeforeClass() : void
     {
-        self::$database = new Database('tests/test.sqlite3');
+        self::$database = new Database(dirname(__FILE__, 2) . '/test.sqlite3');
     }
 
     /** @test */
@@ -122,7 +122,7 @@ final class DatabaseTest extends TestCase
 
         try
         {
-            self::$database->executeStatement("
+            self::$database->execute("
                 INSERT INTO db_version (version, date) 
                 VALUES ($random_version, $todays_date);
             ");
@@ -144,7 +144,7 @@ final class DatabaseTest extends TestCase
 
         try
         {
-            self::$database->executeStatement('
+            self::$database->execute('
                 INSERT INTO db_version (version, date) 
                 VALUES (:version, :date)',
                 [
@@ -157,10 +157,5 @@ final class DatabaseTest extends TestCase
         {
             self::fail($e->getMessage());
         }
-    }
-
-    public static function tearDownAfterClass() : void
-    {
-        self::$database = null;
     }
 }

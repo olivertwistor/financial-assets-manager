@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Olivertwistor\AssetManager;
+namespace Olivertwistor\AssetManager\db;
 
 use InvalidArgumentException;
 use SQLite3;
+use SQLite3Result;
 
 /**
  * This class is a wrapper for SQLite3 database methods. It also provides
@@ -107,7 +108,7 @@ SQL;
 INSERT INTO db_version (version, date)
 VALUES ($version, $date);
 SQL;
-        $this->executeStatement($insert_db_version_sql);
+        $this->execute($insert_db_version_sql);
     }
 
     /**
@@ -159,23 +160,23 @@ SQL;
     }
 
     /**
-     * Executes an SQL statement. This method is not intended for queries where
-     * a result is expected, but for INSERTs, UPDATEs etc. Thus, this method
-     * doesn't return anything.
+     * Executes an SQL query or statement and returns the result set.
      *
      * @param string $sql   the SQL statement to execute
      * @param array $params associative array with parameters to be bound if
-     *                      the SQL statement has named placeholders; default
-     *                      is an empty array (meaning no parameters will be
-     *                      bound)
+     *                      the SQL statement has placeholders; default is an
+     *                      empty array (meaning no parameters will be bound)
+     *
+     * @return SQLite3Result|null The result set from the query, or null if the
+     *                            SQL is a pure statement (e.g. INSERT).
      *
      * @throws DatabaseException if something goes wrong with the preparation
      *                           of the SQL, binding of parameters or execution
-     *                           of the statement.
+     *                           of the query or statement.
      *
      * @since 0.1.0
      */
-    public function executeStatement(string $sql, array $params = []) : void
+    public function execute(string $sql, array $params = []) : ?SQLite3Result
     {
         // Try to prepare the SQL.
         $statement = $this->dataSource->prepare($sql);
@@ -191,6 +192,7 @@ SQL;
             $success = $statement->bindValue($key, $value);
             if (!$success)
             {
+                $statement->close();
                 throw new DatabaseException(
                     "Failed to bind parameter pair $key => $value to " .
                     "statement $sql.");
@@ -201,9 +203,17 @@ SQL;
         $result = $statement->execute();
         if (!$result)
         {
+            $statement->close();
             throw new DatabaseException('Failed to execute statement.');
         }
 
+        // Return the result set if it's a query; null otherwise.
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
+        if ($statement->readOnly())
+        {
+            return null;
+        }
+        return $result;
     }
 
     /**
@@ -221,7 +231,7 @@ SQL;
      *
      * @since 0.1.0
      */
-    private function querySingle(string $sql, bool $entireRow=false)
+    public function querySingle(string $sql, bool $entireRow=false)
     {
         $result = $this->dataSource->querySingle($sql, $entireRow);
 
@@ -231,6 +241,18 @@ SQL;
         }
 
         return $result;
+    }
+
+    /**
+     * Retrieves the row ID of the last INSERT statement to this database.
+     *
+     * @return int
+     *
+     * @since 0.1.0
+     */
+    public function getLastInsertedRowId(): int
+    {
+        return $this->dataSource->lastInsertRowID();
     }
 
     public function __toString() : string
